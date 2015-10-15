@@ -48,8 +48,8 @@ if( NOT EXISTS ${CMAKE_SOURCE_DIR}/Testing/GoogleTest/.git )
   )
 endif()
 
-if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
-  include( elxWinConfigGoogleTest.cmake )
+if( MSVC )
+  include( ${CMAKE_SOURCE_DIR}/CMake/elxWinConfigGoogleTest.cmake )
 endif()
 
 add_subdirectory( GoogleTest )

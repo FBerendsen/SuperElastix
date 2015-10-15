@@ -12,16 +12,11 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY
   "${CMAKE_BINARY_DIR}/bin"
 )
 
-# Include SuperElastix CMake scripts
-set( CMAKE_MODULE_PATH
-  "${CMAKE_CURRENT_SOURCE_DIR}/CMake" 
-  ${CMAKE_MODULE_PATH}
-)
-
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
-  include( elxWinConfig.cmake )
+  include( ${CMAKE_SOURCE_DIR}/CMake/elxWinConfig.cmake )
 endif()
 
+message( STATUS "BOOST_LIBRARYDIR = ${BOOST_LIBRARYDIR}")
 # ---------------------------------------------------------------------
 # ITK
 
@@ -31,7 +26,8 @@ include( "${CMAKE_CURRENT_SOURCE_DIR}/CMake/elxITKRequiredModules.cmake" )
 
 # ---------------------------------------------------------------------
 # Boost Graph Library
-find_package( Boost REQUIRED graph )
+set( Boost_USE_STATIC_LIBS ON )
+find_package( Boost REQUIRED )
 include_directories( ${Boost_INCLUDE_DIRS} )
 
 # ---------------------------------------------------------------------

@@ -19,7 +19,7 @@ else()
   endif()
 endif()
 
-set( BOOST_BUILD_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT}-build/" )
+set( BOOST_BUILD_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT}-build" )
 
 ExternalProject_Add( BOOST
   BUILD_IN_SOURCE 1
@@ -28,7 +28,7 @@ ExternalProject_Add( BOOST
   UPDATE_COMMAND ""
   CONFIGURE_COMMAND ${BOOST_CONFIGURE_COMMAND} 
     --prefix=${BOOST_BUILD_DIR}/lib
-  BUILD_COMMAND ${BOOST_BUILD_COMMAND} install 
+  BUILD_COMMAND ${BOOST_BUILD_COMMAND} install
     --prefix=${BOOST_BUILD_DIR}
     --with-graph
     --variant=release
@@ -36,4 +36,5 @@ ExternalProject_Add( BOOST
   INSTALL_COMMAND ""
 )
 
+#set( BOOST_INCLUDEDIR ${BOOST_BUILD_DIR}/include/boost-1_59 )
 set( BOOST_ROOT ${BOOST_BUILD_DIR} )
