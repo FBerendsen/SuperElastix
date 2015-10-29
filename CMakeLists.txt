@@ -16,7 +16,6 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC" )
   include( ${CMAKE_SOURCE_DIR}/CMake/elxWinConfig.cmake )
 endif()
 
-message( STATUS "BOOST_LIBRARYDIR = ${BOOST_LIBRARYDIR}")
 # ---------------------------------------------------------------------
 # ITK
 
