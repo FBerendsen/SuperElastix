@@ -34,7 +34,7 @@ configure_file(
 )
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
-add_library( DataManager elxDataManager.cxx )
+add_library( DataManager STATIC elxDataManager.cxx )
 
 list( APPEND TEST_LIBRARIES 
   DataManager
