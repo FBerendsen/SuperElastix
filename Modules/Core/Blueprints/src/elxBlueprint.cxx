@@ -1,8 +1,6 @@
 #ifndef __Blueprint_hxx
 #define __Blueprint_hxx
 
-#include <boost/graph/graphviz.hpp>
-
 #include "elxBlueprint.h"
 
 namespace elx {
