@@ -6,7 +6,6 @@
 set( ElastixUnitTestFilenames
   elxExampleUnitTest.cxx
   elxBluePrintTest.cxx
-  itkRegistration.cxx
 )
 
 # ---------------------------------------------------------------------
@@ -34,7 +33,7 @@ configure_file(
 )
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
-add_library( DataManager STATIC elxDataManager.cxx )
+add_library( DataManager elxDataManager.cxx )
 
 list( APPEND TEST_LIBRARIES 
   DataManager
@@ -46,7 +45,7 @@ foreach( ElastixUnitTestFilename ${ElastixUnitTestFilenames} )
   # Build tests executables
   string( REPLACE ".cxx" "" ElastixUnitTest ${ElastixUnitTestFilename} )
   add_executable( "${ElastixUnitTest}" ${ElastixUnitTestFilename} )
-  target_link_libraries( "${ElastixUnitTest}" ${ELASTIX_LIBRARIES} ${ITK_LIBRARIES} ${TEST_LIBRARIES} )
+  target_link_libraries( "${ElastixUnitTest}" ${ELASTIX_LIBRARIES} ${TEST_LIBRARIES} ${ITK_LIBRARIES} ) 
 
   ExternalData_Add_Test( ElastixData
     NAME ${ElastixUnitTest}

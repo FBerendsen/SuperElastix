@@ -12,7 +12,7 @@
 
 namespace elx {
 
-__declspec( dllexport ) class Blueprint : public itk::DataObject
+class Blueprint : public itk::DataObject
 {
 public:
 

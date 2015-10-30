@@ -81,7 +81,7 @@ endmacro()
 
 macro( elxmodule_compile MODULE )
   project( "${MODULE}" )
-  add_library( ${MODULE} STATIC "${${MODULE}_SOURCE_FILES}" )
+  add_library( ${MODULE} "${${MODULE}_SOURCE_FILES}" )
   target_link_libraries( ${MODULE} ${ELASTIX_LIBRARIES} )
   list( APPEND ${MODULE}_LIBRARIES ${MODULE} )
 endmacro()

@@ -21,7 +21,7 @@ endif()
 
 find_package( ITK REQUIRED )
 include( ${ITK_USE_FILE} )
-include( "${CMAKE_CURRENT_SOURCE_DIR}/CMake/elxITKRequiredModules.cmake" )
+include( "${CMAKE_CURRENT_SOURCE_DIR}/CMake/elxRequiredITKModules.cmake" )
 
 # ---------------------------------------------------------------------
 # Boost Graph Library

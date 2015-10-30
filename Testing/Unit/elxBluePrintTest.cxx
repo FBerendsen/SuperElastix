@@ -6,6 +6,8 @@ namespace elx {
 
 TEST( Blueprint, Instantiation )
 {
+  Blueprint::Pointer blueprint = Blueprint::New();
+  blueprint->PrintSelf();
   ASSERT_TRUE( true );
 }
 

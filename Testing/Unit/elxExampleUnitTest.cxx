@@ -11,7 +11,7 @@
 
 TEST( GoogleTest, Example0 )
 {
-  srand( time( NULL ) );
+  srand( 0 );
   ASSERT_TRUE( true );
 }
 
