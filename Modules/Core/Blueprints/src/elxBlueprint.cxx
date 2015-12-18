@@ -26,7 +26,7 @@ Blueprint
   this->Modified();
 
   ComponentIndexType index = boost::add_vertex( this->m_Graph );
-  this->m_Graph[index].parameterMap = parameterMap;
+  this->m_Graph[ index ].parameterMap = parameterMap;
 
   // Return component index so component can retrieved at a later time
   return index;

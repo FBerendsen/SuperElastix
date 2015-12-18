@@ -48,7 +48,7 @@ TEST_F( BlueprintTest, SetComponent )
 
   ParameterMapType parameterMapTest;
   EXPECT_NO_THROW( blueprint->SetComponent( index, parameterMap ) );
-  EXPECT_NO_THROW( parameterMapTest = blueprint->GetComponent( index ) );
+  EXPECT_NO_THROW( parameterMapTest = blueprint->GetComponent( index ) ); // <-- Change to GetComponentParameters?
   EXPECT_EQ( parameterMap["ComponentName"], parameterMapTest["ComponentName"] );
 }
 
@@ -166,4 +166,61 @@ TEST_F( BlueprintTest, WriteBlueprint )
   blueprint->AddConnection( index2, index3 );
 
   EXPECT_NO_THROW( blueprint->WriteBlueprint( "blueprint.dot" ) );
+}
+
+TEST_F( BlueprintTest, ComponentIterator )
+{
+  typedef Blueprint::ComponentIteratorType ComponentIteratorType;
+  typedef Blueprint::ComponentIteratorPairType ComponentIteratorPairType;
+
+  BlueprintPointerType blueprint = Blueprint::New();
+
+  ComponentIndexType index0 = blueprint->AddComponent();
+  blueprint->SetComponent( index0, parameterMap ); // <-- Change name to SetComponentParameters?
+  ComponentIndexType index1 = blueprint->AddComponent();
+  blueprint->SetComponent( index1, parameterMap );
+  ComponentIndexType index2 = blueprint->AddComponent();
+  blueprint->SetComponent( index2, parameterMap );
+
+  ComponentIteratorPairType componentIterators = blueprint->GetComponentIterator();
+  ComponentIteratorType componentIterator = componentIterators.first; // <-- begin()
+  ComponentIteratorType componentIteratorEnd = componentIterators.second; // <-- end()
+
+  // Dereferencing the iterator gives the component index
+  EXPECT_TRUE( (*componentIterator) == 0u );
+  ++componentIterator;
+  EXPECT_TRUE( (*componentIterator) == 1u );
+  ++componentIterator;
+  EXPECT_TRUE( (*componentIterator) == 2u );
+  ++componentIterator;
+
+  // TODO: Test iterator on parameter map component names
+}
+
+TEST_F( BlueprintTest, ConnectionIterator )
+{
+  typedef Blueprint::OutputIteratorType OutputIteratorType;
+  typedef Blueprint::OutputIteratorPairType OutputIteratorPairType;
+
+  BlueprintPointerType blueprint = Blueprint::New();
+
+  ComponentIndexType index0 = blueprint->AddComponent();
+  ComponentIndexType index1 = blueprint->AddComponent();
+  ComponentIndexType index2 = blueprint->AddComponent();
+  ComponentIndexType index3 = blueprint->AddComponent();
+
+  blueprint->AddConnection( index0, index1 );
+  blueprint->AddConnection( index0, index2 );
+  blueprint->AddConnection( index2, index3 );
+
+  OutputIteratorPairType outputIterators = blueprint->GetOutputIterator( index0 );
+  OutputIteratorType outputIterator = outputIterators.first;
+  OutputIteratorType outputIteratorEnd = outputIterators.second;
+
+  // TODO: Should we write an ITK style iterator that hides boost iterators? These
+  // are very 90s style and clumsy to use because you need the graph itself to 
+  // dereference the iterator because of a source/target indirection
+  //
+  // index = boost::source( *connectionIterator, blueprint->GetGraph() )
+  //
 }
