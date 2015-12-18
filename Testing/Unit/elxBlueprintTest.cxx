@@ -217,10 +217,14 @@ TEST_F( BlueprintTest, ConnectionIterator )
   OutputIteratorType outputIterator = outputIterators.first;
   OutputIteratorType outputIteratorEnd = outputIterators.second;
 
-  // TODO: Should we write an ITK style iterator that hides boost iterators? These
-  // are very 90s style and clumsy to use because you need the graph itself to 
-  // dereference the iterator because of a source/target indirection
+  // TODO: Should we write an ITK style iterator that hides boost iterators? The
+  // edge iterators are very 90s style and clumsy to use because you need the 
+  // graph itself to // dereference the iterator because of a source/target indirection
   //
-  // index = boost::source( *connectionIterator, blueprint->GetGraph() )
+  //   index = boost::source( *connectionIterator, blueprint->GetGraph() )
   //
+  // So far we have not exposed the raw boost graph (i.e. there is no GetGraph() method )
+  // and it would be nice if we could avoid doing so in the future. Instead, our interface
+  // should be "complete" and easy to use. Users should not have to learn the boost graph
+  // interface
 }
