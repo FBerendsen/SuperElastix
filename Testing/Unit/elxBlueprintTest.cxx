@@ -226,5 +226,13 @@ TEST_F( BlueprintTest, ConnectionIterator )
   // So far we have not exposed the raw boost graph (i.e. there is no GetGraph() method )
   // and it would be nice if we could avoid doing so in the future. Instead, our interface
   // should be "complete" and easy to use. Users should not have to learn the boost graph
-  // interface
+  // interface. This is probably what we want
+  //
+  // ConnectionIteratorType connectionIterator = blueprint->GetConnectionIterator()->Begin()
+  //
+  // while( !connectionIterator.IsAtEnd() ) // <-- or similar, e.g. connectionIterator != connectionIteratorEnd
+  // {
+  //   // Do something with iterator
+  //   connectionIterator->Value() // <-- should give reference to parameterMap
+  // }
 }
