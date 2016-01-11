@@ -88,7 +88,7 @@ TEST_F( ElastixFilterTest, UpdateOnGetTransformParametersEuler2D )
   EXPECT_NO_THROW( elastixFilter->SetFixedImage( fixedImageReader->GetOutput() ) );
   EXPECT_NO_THROW( elastixFilter->SetMovingImage( movingImageReader->GetOutput() ) );
   EXPECT_NO_THROW( elastixFilter->SetParameterObject( parameterObject ) );
-  EXPECT_NO_THROW( transformParameters = elastixFilter->GetTransformParameters() );
+  EXPECT_NO_THROW( transformParameters = elastixFilter->GetTransformParameterObject() );
   EXPECT_TRUE( transformParameters->GetParameterMap()[ 0 ].size() > 0 );
 }
 
@@ -162,7 +162,7 @@ TEST_F( ElastixFilterTest, AffineWithMultipleFixedAndMovingImages2D )
   EXPECT_NO_THROW( writer->Update() );
 
   ParameterObject::Pointer transformParameterObject;
-  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameters() );
+  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameterObject() );
 }
 
 TEST_F( ElastixFilterTest, TranslationWithPointSets2D )
@@ -183,19 +183,19 @@ TEST_F( ElastixFilterTest, TranslationWithPointSets2D )
   DataManagerType::Pointer dataManager = DataManagerType::New();
 
   // We generate the point sets manually
-  std::ofstream fixedMeshFile;
-  fixedMeshFile.open( dataManager->GetInputFile( "FixedMesh.pts" ));
-  fixedMeshFile << "point\n";
-  fixedMeshFile << "1\n";
-  fixedMeshFile << "128.0 128.0\n";
-  fixedMeshFile.close();
+  std::ofstream fixedPointSetFile;
+  fixedPointSetFile.open( dataManager->GetInputFile( "FixedPointSet.pts" ) );
+  fixedPointSetFile << "point\n";
+  fixedPointSetFile << "1\n";
+  fixedPointSetFile << "128.0 128.0\n";
+  fixedPointSetFile.close();
 
-  std::ofstream movingMeshFile;
-  movingMeshFile.open( dataManager->GetInputFile( "MovingMesh.pts" ));
-  movingMeshFile << "point\n";
-  movingMeshFile << "1\n";
-  movingMeshFile << "115.0 111.0\n";
-  movingMeshFile.close();
+  std::ofstream movingPointSetFile;
+  movingPointSetFile.open( dataManager->GetInputFile( "MovingPointSet.pts" ) );
+  movingPointSetFile << "point\n";
+  movingPointSetFile << "1\n";
+  movingPointSetFile << "115.0 111.0\n";
+  movingPointSetFile.close();
 
   ImageFileReaderType::Pointer fixedImageReader = ImageFileReaderType::New();
   fixedImageReader->SetFileName( dataManager->GetInputFile( "BrainProtonDensitySliceBorder20.png" ) );
@@ -207,9 +207,9 @@ TEST_F( ElastixFilterTest, TranslationWithPointSets2D )
   EXPECT_NO_THROW( elastixFilter = ElastixFilterType::New() );
   EXPECT_NO_THROW( elastixFilter->LogToConsoleOn() );
   EXPECT_NO_THROW( elastixFilter->SetFixedImage( fixedImageReader->GetOutput() ) );
-  EXPECT_NO_THROW( elastixFilter->SetFixedMeshFileName( dataManager->GetInputFile( "FixedMesh.pts" )  ) );
+  EXPECT_NO_THROW( elastixFilter->SetFixedPointSetFileName( dataManager->GetInputFile( "FixedPointSet.pts" )  ) );
   EXPECT_NO_THROW( elastixFilter->SetMovingImage( movingImageReader->GetOutput() ) );
-  EXPECT_NO_THROW( elastixFilter->SetMovingMeshFileName( dataManager->GetInputFile( "MovingMesh.pts" ) ) );
+  EXPECT_NO_THROW( elastixFilter->SetMovingPointSetFileName( dataManager->GetInputFile( "MovingPointSet.pts" ) ) );
   EXPECT_NO_THROW( elastixFilter->SetParameterObject( parameterObject ) );
 
   ImageFileWriterType::Pointer writer = ImageFileWriterType::New();
@@ -218,15 +218,11 @@ TEST_F( ElastixFilterTest, TranslationWithPointSets2D )
   EXPECT_NO_THROW( writer->Update() );
 
   ParameterObject::Pointer transformParameterObject;
-  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameters() );
+  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameterObject() );
  }
 
 TEST_F( ElastixFilterTest, BSplineWithFixedMask2D )
 {
-  ParameterObject::Pointer parameterObject;
-  EXPECT_NO_THROW( parameterObject = ParameterObject::New() );
-  EXPECT_NO_THROW( parameterObject->SetParameterMap( "nonrigid" ) );
-
   typedef itk::Image< float, 2 > ImageType;
   typedef itk::ImageFileReader< ImageType > ImageFileReaderType;
   typedef itk::ImageFileWriter< ImageType > ImageFileWriterType;
@@ -249,7 +245,6 @@ TEST_F( ElastixFilterTest, BSplineWithFixedMask2D )
   EXPECT_NO_THROW( elastixFilter->SetFixedImage( fixedImageReader->GetOutput() ) );
   EXPECT_NO_THROW( elastixFilter->SetFixedMask( fixedMaskReader->GetOutput() ) );
   EXPECT_NO_THROW( elastixFilter->SetMovingImage( movingImageReader->GetOutput() ) );
-  EXPECT_NO_THROW( elastixFilter->SetParameterObject( parameterObject ) );
 
   ImageFileWriterType::Pointer writer = ImageFileWriterType::New();
   EXPECT_NO_THROW( writer->SetFileName( dataManager->GetOutputFile( "BSplineWithFixedMask2DResultImage.nii" ) ) );
@@ -257,7 +252,7 @@ TEST_F( ElastixFilterTest, BSplineWithFixedMask2D )
   EXPECT_NO_THROW( writer->Update() );
 
   ParameterObject::Pointer transformParameterObject;
-  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameters() );
+  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameterObject() );
 }
 
 #ifdef SUPERELASTIX_BUILD_LONG_TESTS
@@ -283,7 +278,7 @@ TEST_F( ElastixFilterTest, DefaultParameterObject )
   EXPECT_NO_THROW( elastixFilter->LogToConsoleOn() );
   EXPECT_NO_THROW( elastixFilter->SetFixedImage( fixedImageReader->GetOutput() ) );
   EXPECT_NO_THROW( elastixFilter->SetMovingImage( movingImageReader->GetOutput() ) );
-  elastixFilter->Update();
+  EXPECT_NO_THROW( elastixFilter->Update() );
 }
 
 TEST_F( ElastixFilterTest, BSpline3D )
@@ -319,7 +314,7 @@ TEST_F( ElastixFilterTest, BSpline3D )
   EXPECT_NO_THROW( writer->Update() );
 
   ParameterObject::Pointer transformParameterObject;
-  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameters() );
+  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameterObject() );
 }
 
 #include "itkCastImageFilter.h" 
@@ -359,7 +354,7 @@ TEST_F( ElastixFilterTest, BSpline4D )
   EXPECT_NO_THROW( writer->Update() );
 
   ParameterObject::Pointer transformParameterObject;
-  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameters() );
+  EXPECT_NO_THROW( transformParameterObject = elastixFilter->GetTransformParameterObject() );
 }
 
 #endif // SUPERELASTIX_BUILD_LONG_TESTS
