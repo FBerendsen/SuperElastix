@@ -7,8 +7,8 @@ cmake_minimum_required( VERSION 3.0.2 )
 # ---------------------------------------------------------------------
 project( SuperElastix )
 
-enable_language(C)
-enable_language(CXX)
+enable_language( C )
+enable_language( CXX )
 set( CMAKE_CXX_STANDARD 11 )
 
 # Place libraries and executables in the bin directory
@@ -49,6 +49,12 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC )
       "Please move the build directory to a directory with a shorter path."
     )
   endif()
+
+  # Enable target level parallelism in Visual Studio
+  include( elxCompilerConfigurations )
+  foreach( CompilerConfiguration in ${CompilerConfigurations} )
+    list( APPEND ${CompilerConfiguration} "/MP" )
+  endforeach()
 endif()
 
 # ---------------------------------------------------------------------

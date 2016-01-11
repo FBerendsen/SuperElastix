@@ -1,4 +1,4 @@
-set( CompilerFlags
+set( CompilerConfigurations
   CMAKE_CXX_FLAGS
   CMAKE_CXX_FLAGS_DEBUG
   CMAKE_CXX_FLAGS_MINSIZEREL
