@@ -1,4 +1,7 @@
 set( proj SuperElastix )
+#TODO either of these variables should contain the MSVC specific compilerflags
+MESSAGE( STATUS "proj SuperElastix MSVC Compiler flags: " ${MSVC_COMP_FLAGS} )
+MESSAGE( STATUS "proj SuperElastix CompilerConfigurations: " ${CompilerConfigurations} )
 
 ExternalProject_Add( ${proj}
   DOWNLOAD_COMMAND ""
@@ -6,6 +9,9 @@ ExternalProject_Add( ${proj}
   BINARY_DIR ${proj}-build
   CMAKE_ARGS
     --no-warn-unused-cli
+	# TODO make flags MSVC specific
+    -DCMAKE_CXX_FLAGS:STRING=/MP
+    -DCMAKE_C_FLAGS:STRING=/MP
     -DSUPERELASTIX_BUILD_EXAMPLES:BOOL=${SUPERELASTIX_BUILD_EXAMPLES}
     -DSUPERELASTIX_BUILD_TESTING:BOOL=${SUPERELASTIX_BUILD_TESTING}
     -DSUPERELASTIX_BUILD_LONG_TESTS:BOOL=${SUPERELASTIX_BUILD_LONG_TESTS}

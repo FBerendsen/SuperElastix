@@ -1,7 +1,11 @@
 set( proj Elastix )
 
 set( ELASTIX_REPOSITORY https://svn.bigr.nl/elastix/trunkpublic/ )
-set( ELASTIX_REVISION 5159 )
+set( ELASTIX_REVISION 5175 )
+
+#TODO either of these variables should contain the MSVC specific compilerflags
+MESSAGE( STATUS "proj Elastix MSVC Compiler flags: " ${MSVC_COMP_FLAGS} )
+MESSAGE( STATUS "proj Elastix CompilerConfigurations: " ${CompilerConfigurations} )
 
 ExternalProject_Add( ${proj} 
   SVN_REPOSITORY ${ELASTIX_REPOSITORY}
@@ -12,6 +16,9 @@ ExternalProject_Add( ${proj}
   CMAKE_GENERATOR ${gen}
   CMAKE_ARGS
   --no-warn-unused-cli
+  # TODO make flags MSVC specific
+  -DCMAKE_CXX_FLAGS:STRING=/MP
+  -DCMAKE_C_FLAGS:STRING=/MP
   -DELASTIX_BUILD_TESTING:BOOL=OFF
   -DELASTIX_BUILD_EXECUTABLE:BOOL=OFF
   -DELASTIX_BUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}

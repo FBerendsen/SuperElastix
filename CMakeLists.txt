@@ -31,6 +31,7 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU )
 endif()
 
 # MSVC
+set( MSVC_COMP_FLAGS)
 if( ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC )
   string( LENGTH "${CMAKE_CURRENT_SOURCE_DIR}" n )
   if( n GREATER 50 )
@@ -49,14 +50,19 @@ if( ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC )
       "Please move the build directory to a directory with a shorter path."
     )
   endif()
-
+ 
   # Enable target level parallelism in Visual Studio
-  include( elxCompilerConfigurations )
-  foreach( CompilerConfiguration in ${CompilerConfigurations} )
-    list( APPEND ${CompilerConfiguration} "/MP" )
-  endforeach()
+  set( MSVC_COMP_FLAGS 
+    -DCMAKE_CXX_FLAGS:STRING=/MP
+    -DCMAKE_C_FLAGS:STRING=/MP CACHE )
+  #include( elxCompilerConfigurations )
+  #foreach( CompilerConfiguration in ${CompilerConfigurations} )
+  #  list( APPEND ${CompilerConfiguration} "/MP" )
+  #endforeach()
 endif()
-
+#TODO: these flags should be set, but I see no output at all...
+MESSAGE( STATUS "MSVC Compiler flags: " ${MSVC_COMP_FLAGS} )
+MESSAGE( STATUS "CompilerConfigurations: " ${CompilerConfigurations} )
 # ---------------------------------------------------------------------
 # ITK
 
