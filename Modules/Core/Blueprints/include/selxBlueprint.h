@@ -22,7 +22,14 @@
 
 #include "boost/graph/graph_traits.hpp"
 #include "boost/graph/directed_graph.hpp"
-#include "boost/graph/labeled_graph.hpp"
+#include "boost/graph/labeled_graph.hpp"  // < CM: If you can I would try to hide that you use boost. It is basically an
+                                          //       implementation detail. Architecture wise it would be better to hide it
+                                          //       so in theory you can swap out the boost graph for another graph implementation
+                                          //       if desired. Encapsulation will be better; you will not drag in the boost incldues everywhere
+                                          //       where you include selxBlueprint.h. Your .h file will be a lot cleaner as well. You can remove
+                                          //       the boost includes and boost related typedefs to you cxx file. You may have to use the PIMPL idiom
+                                          //       to store the m_Graph member. GetConnectionIndex can be rewritten as a non-member function
+                                          //       (cxx file local function) or be part of the PIMPL class.
 
 #include "itkObjectFactory.h"
 #include "itkDataObject.h"
@@ -31,7 +38,10 @@
 
 namespace selx {
 
-class Blueprint : public itk::DataObject
+class Blueprint : public itk::DataObject  // < CM: Is there a reason to make the SuperElastix classes derive from
+                                          //       ITK DataObject? If you do not really need it, I would remove it.
+                                          //
+                                          // < CM: Shouldn't it be 'BluePrint'?
 {
 public:
 
@@ -40,20 +50,20 @@ public:
   typedef std::string                                                ParameterKeyType;
   typedef std::vector< std::string >                                 ParameterValueType;
   typedef std::map< ParameterKeyType, ParameterValueType >           ParameterMapType;
-  
+
   typedef std::string                                                ComponentNameType;
   
-    // Component parameter map that sits on a node in the graph 
+  // Component parameter map that sits on a node in the graph 
   // and holds component configuration settings
   struct ComponentPropertyType { 
     ComponentNameType name;
-    ParameterMapType parameterMap;
+    ParameterMapType parameterMap;  // < CM: parameterMap -> parameters?
   };
 
-  // Component parameter map that sits on an edge in the graph 
+  // Component parameter map that sits on an edge in the graph  < CM : Component -> Connection?
   // and holds component connection configuration settings
   struct ConnectionPropertyType { 
-    ParameterMapType parameterMap;
+    ParameterMapType parameterMap;  // < CM: parameterMap -> parameters?
   };
   
   typedef boost::labeled_graph < boost::adjacency_list <                       
@@ -82,20 +92,26 @@ public:
   typedef std::pair< OutputIteratorType, OutputIteratorType >         OutputIteratorPairType;
 
   // Interface for managing components
-  bool AddComponent( ComponentNameType name);
+  bool AddComponent(ComponentNameType name);
   bool AddComponent(ComponentNameType name, ParameterMapType parameterMap);
   ParameterMapType GetComponent(ComponentNameType name) const;
-  void SetComponent(ComponentNameType, ParameterMapType parameterMap);
+  void SetComponent(ComponentNameType, ParameterMapType parameterMap);  // < CM: Do you really need a Set method? Is Update maybe a better name?
 
-  // TODO: Let user delete component. Before we do this, we need a proper way of 
+  // TODO: Let user delete component. Before we do this, we need a proper way of
   // checking that a vertex exist. Otherwise a call to GetComponent() on 
-  // a deleted vertex will result in segfault. It is not really a in issue
+  // a deleted vertex will result in segfault. It is not really an issue
   // _before_ release since typically we (the developers) will use blueprint 
   // interface procedurally.
-  // void DeleteComponent( ComponentIndexType );
+  // void DeleteComponent( ComponentIndexType );  // < CM: Do you expect users to modify the blueprint after creation?
+  //                                                       If you assume they cannot, the interface would be simpler you have less trouble
+  //                                                       implementing the updates/removals.
 
   // Returns a vector of the all Component names in the graph.
-  // TODO: should this be an iterator over the names?
+  // TODO: should this be an iterator over the names?  < CM: I think an iterator is a bit heavy here. Users can just run std::algorithms on
+  //                                                         the returned vector if they want to. Only when you can get a real performance
+  //                                                         improvement by creating iterators that directly point to the in memory location
+  //                                                         of the names in the boost graph you can consider using iterators. Otherwise this
+  //                                                         method is quite efficient given the compiler uses RVO.
   ComponentNamesType GetComponentNames(void) const;
 
   // Interface for managing connections between components in which we 
@@ -114,7 +130,7 @@ public:
   // TODO: should this be an iterator over the names?
   ComponentNamesType GetOutputNames(const ComponentNameType name) const;
 
-  void WriteBlueprint( const std::string filename );
+  void WriteBlueprint(const std::string filename);  // < CM: WriteBlueprint -> Write.
 
 private:
  

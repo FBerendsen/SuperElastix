@@ -1,0 +1,41 @@
+Parameter maps:
+
+
+
+Style (partly personal taste):
+
+1) Namespace indentation:
+
+   You may consider not indenting namespace content:
+  
+   namespace foo {
+  
+   class bar {};
+  
+   }
+  
+   instead of
+  
+   namepspace foo {
+    
+     class bar {};
+    
+   }
+  
+2) Function definition:
+
+   I prefer to change:
+
+   bool
+   Blueprint
+   ::AddComponent(ComponentNameType name)
+   
+   to:
+   
+   bool Blueprint::AddComponent(ComponentNameType name).
+   
+   This saves you 2 lines of code. You therefore get more real code within in screen which makes
+   navigation easier and gives the coder better overview.
+
+3) Document preconditions / postconditions in header file so the users knows the restrictions on the
+   input.
