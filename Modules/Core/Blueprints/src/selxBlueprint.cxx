@@ -151,7 +151,7 @@ Blueprint
 // }
 
 Blueprint::ComponentNamesType Blueprint::GetComponentNames(void) const{
-  ComponentNamesType container;
+  ComponentNamesType container;  // < CM: container -> names.
   for (auto it = boost::vertices(this->m_Graph.graph()).first; it != boost::vertices(this->m_Graph.graph()).second; ++it){
     container.push_back(this->m_Graph.graph()[*it].name);
   }

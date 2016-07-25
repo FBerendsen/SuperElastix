@@ -21,6 +21,11 @@
 
 #include "gtest/gtest.h"
 
+// < CM: Following methods not tested:
+//       - GetComponentNames
+//       - GetOutputNames
+//       - ComponentExists
+
 using namespace selx;
 
 class BlueprintTest : public ::testing::Test {
@@ -32,11 +37,15 @@ public:
 
   virtual void SetUp() {
     parameterMap["NameOfClass"] = ParameterValueType(1, "TestClassName");
+
+    // < CM: As you create a blue print in every test, you can also do it here:
+    //       this->blueprint_ = Blueprint::New();
   }
 
   ParameterMapType parameterMap;
 };
 
+// < CM: I would expect bool AddComponent(ComponentNameType name) to be tested here as well.
 TEST_F( BlueprintTest, AddComponent )
 {
   BlueprintPointerType blueprint;
@@ -47,6 +56,11 @@ TEST_F( BlueprintTest, AddComponent )
 
   bool success1;
   EXPECT_NO_THROW( success1 = blueprint->AddComponent("MyComponentName", parameterMap));
+  
+  // < CM: You should also check the effect of the test:
+  //       - What should the return value be.
+  //       - Check that something has really been added and that it corresponds to what you expect.
+  //       - Check all control flows of the code (so check failures as well).
 }
 
 TEST_F( BlueprintTest, GetComponent ) 
@@ -68,10 +82,15 @@ TEST_F( BlueprintTest, SetComponent )
   EXPECT_NO_THROW(blueprint->SetComponent("MyComponentName", parameterMap));
   EXPECT_NO_THROW(parameterMapTest = blueprint->GetComponent("MyComponentName"));
   EXPECT_EQ( parameterMap["NameOfClass"], parameterMapTest["NameOfClass"] );
+
+  // < CM: As you add and set the component using the same parameter map, the test will also succeed
+  //       with an empty implementation of SetComponent.
 }
 
 // TODO: The final line segfaults because GetComponent does not check that the index actually
 // actually exist. See explanation in selxBlueprint.h
+// < CM: This may signal inconsistencies or lack of preconditions. Think well about which cases you
+//       really want to tackle in your code and which you assume to be preconditions.
 // TEST_F( BlueprintTest, DeleteComponent ) 
 // {
 //   BlueprintPointerType blueprint = Blueprint::New();
@@ -109,11 +128,12 @@ TEST_F( BlueprintTest, AddConnection )
   // Connection should be empty
   ParameterMapType parameterMapTest0;
   EXPECT_NO_THROW(parameterMapTest0 = blueprint->GetConnection("Component0", "Component1"));
-  EXPECT_EQ( 0u, parameterMapTest0.size() );
+  EXPECT_EQ( 0u, parameterMapTest0.size() );  // < CM: Or use EXPECT_TRUE(parameterMapTest0.empty())
 
   // Connection with properties should be added. Testing if properties was 
   // properly set requires a call to GetConnection() which is the responsibility
-  // of the next test.
+  // of the next test. // < CM: I think I would test it here anyway and just do a bit more extensive
+  //                            testing of GetConnection in the next test.
   ParameterMapType parameterMapTest1;
   EXPECT_TRUE(blueprint->AddConnection("Component1", "Component2", parameterMap));
 }
@@ -164,7 +184,7 @@ TEST_F( BlueprintTest, DeleteConnection )
   EXPECT_TRUE(blueprint->ConnectionExists("Component0", "Component1"));
 
   // Connection be deleted
-  EXPECT_TRUE(blueprint->DeleteConnection("Component0", "Component1"));
+  EXPECT_TRUE(blueprint->DeleteConnection("Component0", "Component1"));  // < CM: Also check case in which method returns false.
 
   // Connection should not exist 
   EXPECT_FALSE(blueprint->ConnectionExists("Component0", "Component1"));
@@ -212,4 +232,6 @@ TEST_F( BlueprintTest, WriteBlueprint )
   blueprint->AddConnection("Transform", "Metric");
 
   EXPECT_NO_THROW( blueprint->WriteBlueprint( "blueprint.dot" ) );
+
+  // < CM: Test effect of write method. Open dot file and check its contents.
 }

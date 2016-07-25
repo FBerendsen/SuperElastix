@@ -39,3 +39,13 @@ Style (partly personal taste):
 
 3) Document preconditions / postconditions in header file so the users knows the restrictions on the
    input.
+   
+4) Typedefs. I would try to minimize their use. If convenient maybe better use the C++11 type alias
+   instead.
+   
+5) Unit tests:
+   - Test the effect of the test on the state of the object. Only testing that it runs and does not
+     thow is very limited.
+   - Make sure you test all possible flows through your code. Include error and exception cases.
+   - Do you use a code coverage tool? Can be very helpful.
+   
