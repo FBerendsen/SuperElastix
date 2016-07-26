@@ -1,8 +1,22 @@
-Parameter maps:
+Architecture:
 
+1) Document preconditions / postconditions in header file so the users knows the restrictions on the
+   input.
 
+2) Avoid using ITK base classes when possible. I don't think there is a real reason to make your
+   SuperElastix classes ITK classes. It forces you to use the ITK style of class creation, which I
+   think is old fashioned and not really in line with modern C++.
 
-Style (partly personal taste):
+Tests:
+ 
+1) Test the effect of the test on the state of the object. Only testing that it runs and does not
+   thow is very limited.
+   
+2) Make sure you test all possible flows through your code. Include error and exception cases.
+
+3) Do you use a code coverage tool? Can be very helpful.
+
+Style (may be personal taste):
 
 1) Namespace indentation:
 
@@ -37,15 +51,7 @@ Style (partly personal taste):
    This saves you 2 lines of code. You therefore get more real code within in screen which makes
    navigation easier and gives the coder better overview.
 
-3) Document preconditions / postconditions in header file so the users knows the restrictions on the
-   input.
-   
-4) Typedefs. I would try to minimize their use. If convenient maybe better use the C++11 type alias
+3) Typedefs. I would try to minimize their use. If convenient maybe better use the C++11 type alias
    instead.
-   
-5) Unit tests:
-   - Test the effect of the test on the state of the object. Only testing that it runs and does not
-     thow is very limited.
-   - Make sure you test all possible flows through your code. Include error and exception cases.
-   - Do you use a code coverage tool? Can be very helpful.
-   
+
+4) You can use auto more often. This might reduce the typedef needs.

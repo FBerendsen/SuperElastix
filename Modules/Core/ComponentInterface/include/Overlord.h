@@ -41,25 +41,31 @@
 #include "Interfaces.h"
 namespace selx
 {
+  // < CM: This class can really benefit from some comments.
 
-  class Overlord : public itk::LightProcessObject
+  class Overlord : public itk::LightProcessObject  // < CM: Do you really want to inherit from a ITK base class here.
+                                                   //       It makes you stick with the ITK factory kind of object creation
+                                                   //       which is in my opinion old fashioned and limiting you too much,
+                                                   //       especially when you want to use non-default constructors.
   {
   public:
 
     selxNewMacro(Overlord, itk::LightProcessObject);
 
+    // < CM: Minimize typedefs. It really obfuscates the interface of the class. If you really need
+    //       typedefs for the interface put them here. Otherwise put them in the cxx file.
     typedef ComponentBase::CriteriaType CriteriaType;
     typedef ComponentBase::CriterionType CriterionType;
     typedef ComponentBase::ParameterValueType ParameterValueType;
 
     typedef ComponentBase       ComponentType;
     typedef ComponentSelector::Pointer ComponentSelectorPointer;
-    typedef Blueprint BlueprintType;
+    typedef Blueprint BlueprintType;  // < CM: What is the advantage of using BlueprintType over Blueprint directly?
     typedef BlueprintType::ComponentNameType ComponentNameType;
     typedef std::map< ComponentNameType, ComponentSelectorPointer> ComponentSelectorContainerType;
     typedef ComponentSelectorContainerType::iterator ComponentSelectorIteratorType;
 
-    typedef AnyFileReader AnyFileReaderType;
+    typedef AnyFileReader AnyFileReaderType;  // < CM: What is the advantage of using AnyFileReaderType over AnyFileReader directly?
     typedef AnyFileWriter AnyFileWriterType;
 
     typedef std::map <
@@ -111,9 +117,6 @@ namespace selx
     
     ComponentsContainerType::Pointer m_RunRegistrationComponents;
     ComponentsContainerType::Pointer m_AfterRegistrationComponents;
-    
-
-
   };
 
 } // end namespace selx

@@ -40,8 +40,6 @@ namespace selx {
 
 class Blueprint : public itk::DataObject  // < CM: Is there a reason to make the SuperElastix classes derive from
                                           //       ITK DataObject? If you do not really need it, I would remove it.
-                                          //
-                                          // < CM: Shouldn't it be 'BluePrint'?
 {
 public:
 
@@ -119,7 +117,8 @@ public:
   // the user to think in terms of components (which is conceptually simpler)
   bool AddConnection(ComponentNameType upstream, ComponentNameType downstream);
   bool AddConnection(ComponentNameType upstream, ComponentNameType downstream, ParameterMapType parameterMap);
-  ParameterMapType GetConnection(ComponentNameType upstream, ComponentNameType downstream) const;
+  ParameterMapType GetConnection(ComponentNameType upstream, ComponentNameType downstream) const;  // < CM: The name and return type are a bit out of sync.
+                                                                                                   //        You expect to get a connection back, but instead you het a parameter map.
   bool SetConnection(ComponentNameType upstream, ComponentNameType downstream, ParameterMapType parameterMap);
   bool DeleteConnection(ComponentNameType upstream, ComponentNameType downstream);
 

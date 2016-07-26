@@ -42,7 +42,7 @@ public:
 
   virtual void SetUp() {
     /** register all example components */
-    ComponentFactory<TransformComponent1>::RegisterOneFactory();
+    ComponentFactory<TransformComponent1>::RegisterOneFactory();  // < CM: Not really clear to me how this works/is needed yet. Maybe something for the next review round.
     ComponentFactory<MetricComponent1>::RegisterOneFactory();
     ComponentFactory<GDOptimizer3rdPartyComponent>::RegisterOneFactory();
     ComponentFactory<GDOptimizer4thPartyComponent>::RegisterOneFactory();
@@ -80,6 +80,8 @@ TEST_F( OverlordTest, Create )
 {
   EXPECT_NO_THROW( overlord = Overlord::New() );
   EXPECT_NO_THROW( overlord->SetBlueprint(blueprint) );
+
+  // < CM: Test expected results.
 }
 
 TEST_F(OverlordTest, Configure)
@@ -90,5 +92,7 @@ TEST_F(OverlordTest, Configure)
   EXPECT_NO_THROW(allUniqueComponents = overlord->Configure());
   EXPECT_TRUE(allUniqueComponents);
 }
+
+// < CM: Tests seem to be incomplete. You don't execute anything.
 
 } // namespace selx

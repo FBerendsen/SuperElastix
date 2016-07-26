@@ -19,6 +19,13 @@
 
 #include "Overlord.h"
 
+// < CM: I would rename the class. Overlord is vague and maybe even a bit too strong given its definition.
+//       This is the more or less entry class of the whole package right? So maybe just call it SuperElastix?
+//       If something is difficult to name it might indicate that you need to refactor. Often the class then has
+//       multiple responsibilities (violates single responsibility principle). I do not have a very clear picture
+//       of how to split this up, but you could consider to separate configuring and running the configuratios.
+//       Those can then be separate classes which may be easier to name.
+
 namespace selx
 {
   Overlord::Overlord() : m_isConfigured(false), m_allUniqueComponents(false)
@@ -31,10 +38,10 @@ namespace selx
   {
     if (!this->m_isConfigured)
     {
-      this->m_isConfigured = true;
+      this->m_isConfigured = true;  // < CM: Maybe better to set this at the end of the if-block.
       this->ApplyNodeConfiguration();
       std::cout << "Applying Component Settings" << std::endl;
-      this->m_allUniqueComponents = this->UpdateSelectors();
+      this->m_allUniqueComponents = this->UpdateSelectors();  // < CM: Can you keep m_allUniqueComponents local? It is a member now but not used outside this method.
       std::cout << "Based on Component Criteria unique components could " << (this->m_allUniqueComponents ? "" : "not ") << "be selected" << std::endl;
 
       std::cout << "Applying Connection Settings" << std::endl;
@@ -60,11 +67,11 @@ namespace selx
 
   bool Overlord::UpdateSelectors()
   {
-    bool allUniqueComponents = true;
+    bool allUniqueComponents = true;  // < CM: Can be removed. Depends if you want to print the information for the rest of the components or not.
     const Blueprint::ComponentNamesType componentNames = m_Blueprint->GetComponentNames();
     for (auto const & name : componentNames)
     {
-      ComponentSelector::NumberOfComponentsType numberOfComponents = this->m_ComponentSelectorContainer[name]->UpdatePossibleComponents();
+      ComponentSelector::NumberOfComponentsType numberOfComponents = this->m_ComponentSelectorContainer[name]->UpdatePossibleComponents();  // < CM: Use auto?
 
       // The current idea of the configuration setup is that the number of 
       // possible components at a node can only be reduced by adding criteria.
@@ -75,12 +82,12 @@ namespace selx
       // The (failing) criteria can be printed as well.
       if (numberOfComponents > 1)
       {
-        allUniqueComponents = false;
+        allUniqueComponents = false; // < CM: You can break the for loop here to save a bit of time: return true;
       }
       std::cout << "blueprint node " << name << " has selected " << numberOfComponents << " components" << std::endl;
 
     }
-    return allUniqueComponents;
+    return allUniqueComponents;  // < CM: return true;
   }
 
   void Overlord::ApplyNodeConfiguration()
@@ -89,13 +96,17 @@ namespace selx
     // on the keys we find in the graph. This is a flexible solution, but is
     // fragile as well since correspondence is implicit.
     // We might consider copying the blueprint graph to a component selector
-    // graph, such that all graph operations correspond
+    // graph, such that all graph operations correspond.
     //
     // This could be in line with the idea of maintaining 2 graphs: 
     // 1 descriptive (= const blueprint) and 1 internal holding to realized 
     // components.
     // Manipulating the internal graph (combining component nodes into a 
-    // hybrid node, duplicating sub graphs, etc) is possible then.
+    // hybrid node, duplicating sub graphs, etc) is possible then. < CM: This makes sense to me. So you have a blueprint and from that blueprint
+    //                                                                   you create an instantiated graph using component selectors. You can put this
+    //                                                                   procedure in a separate class I think. Next to the blueprint class there will be
+    //                                                                   an instantiated blueprint class (still needs a nice name). Then the overlord can handler
+    //                                                                   input to and output from this graph and its execution.
     //
     // Additional redesign consideration: the final graph should hold the 
     // realized components at each node and not the ComponentSelectors that, 
@@ -108,10 +119,11 @@ namespace selx
       Blueprint::ParameterMapType currentProperty = this->m_Blueprint->GetComponent(name);
       currentComponentSelector->SetCriteria(currentProperty);
       // insert new element
-      this->m_ComponentSelectorContainer[name]=currentComponentSelector;
+      this->m_ComponentSelectorContainer[name] = currentComponentSelector;
     }
     return;
   }
+
   void Overlord::ApplyConnectionConfiguration()
   {
     Blueprint::ComponentNamesType componentNames = this->m_Blueprint->GetComponentNames();
@@ -124,10 +136,10 @@ namespace selx
         if (connectionProperties.count("NameOfInterface") > 0)
         {
           ComponentBase::CriteriaType additionalSourceCriteria;
-          additionalSourceCriteria.insert(ComponentBase::CriterionType("HasProvidingInterface", connectionProperties["NameOfInterface"]));
+          additionalSourceCriteria.insert(ComponentBase::CriterionType("HasProvidingInterface", connectionProperties["NameOfInterface"]));  // < CM: Can you use a type safe way of requesting HasProvidingInterface instead of using a string?
 
           ComponentBase::CriteriaType additionalTargetCriteria;
-          additionalTargetCriteria.insert(ComponentBase::CriterionType("HasAcceptingInterface", connectionProperties["NameOfInterface"]));
+          additionalTargetCriteria.insert(ComponentBase::CriterionType("HasAcceptingInterface", connectionProperties["NameOfInterface"]));  // < CM: Can you use a type safe way of requesting HasAcceptingInterface instead of using a string?
 
           this->m_ComponentSelectorContainer[name]->AddCriteria(additionalSourceCriteria);
           this->m_ComponentSelectorContainer[outgoingName]->AddCriteria(additionalTargetCriteria);
@@ -137,7 +149,10 @@ namespace selx
 
     return;
   }
-  bool Overlord::ConnectComponents()
+
+  bool Overlord::ConnectComponents()  // < CM: This method is not called (at least not in the unit test and not from this class).
+                                      //       It is called in the SuperElastixFilter, but would it not make more sense to call it from
+                                      //       Configure?
   {
     bool isAllSuccess = true;
 
@@ -176,6 +191,7 @@ namespace selx
     }
     return isAllSuccess;
   }
+
   Overlord::SourceInterfaceMapType Overlord::GetSourceInterfaces()
   {
     /** Scans all Components to find those with Sourcing capability and store them in SourceComponents list */
@@ -188,7 +204,7 @@ namespace selx
       ComponentBase::Pointer component = componentSelector.second->GetComponent();
       if (component->MeetsCriteria(sourceCriteria)) // TODO MeetsCriterion
       {
-        SourceInterface* provingSourceInterface = dynamic_cast<SourceInterface*> (&(*component));
+        SourceInterface* provingSourceInterface = dynamic_cast<SourceInterface*> (&(*component)); // < CM: Does ITK not have a get() method for smart pointers?
         if (provingSourceInterface == nullptr) // is actually a double-check for sanity: based on criterion cast should be successful
         {
           itkExceptionMacro("dynamic_cast<SourceInterface*> fails, but based on component criterion it shouldn't")
@@ -214,7 +230,7 @@ namespace selx
       ComponentBase::Pointer component = componentSelector.second->GetComponent();
       if (component->MeetsCriteria(sinkCriteria))  // TODO MeetsCriterion
       {
-        SinkInterface* provingSinkInterface = dynamic_cast<SinkInterface*> (&(*component));
+        SinkInterface* provingSinkInterface = dynamic_cast<SinkInterface*> (&(*component)); // < CM: Does ITK not have a get() method for smart pointers?
         if (provingSinkInterface == nullptr) // is actually a double-check for sanity: based on criterion cast should be successful
         {
           itkExceptionMacro("dynamic_cast<SinkInterface*> fails, but based on component criterion it shouldn't")
@@ -225,7 +241,7 @@ namespace selx
     return sinkInterfaceMap;
   }
 
-    bool Overlord::FindRunRegistration()
+  bool Overlord::FindRunRegistration()
   {
     /** Scans all Components to find those with Sourcing capability and store them in SourceComponents list */
     const CriterionType runRegistrationCriterion = CriterionType("HasProvidingInterface", { "RunRegistrationInterface" });
@@ -234,7 +250,7 @@ namespace selx
     CriteriaType runRegistrationCriteria;
     runRegistrationCriteria.insert(runRegistrationCriterion);
 
-    for (auto const & componentSelector : (this->m_ComponentSelectorContainer))
+    for (auto const & componentSelector : (this->m_ComponentSelectorContainer))  // < CM: parentheses around this->m_ComponentSelectorContainer are probably not needed.
     {
       ComponentBase::Pointer component = componentSelector.second->GetComponent();
       if (component->MeetsCriteria(runRegistrationCriteria)) // TODO MeetsCriterion
@@ -243,19 +259,19 @@ namespace selx
       }
     }
 
-    return true;
+    return true; // < CM: Is it useful to always return true?
   }
 
   bool Overlord::FindAfterRegistration()
   {
-    /** Scans all Components to find those with Sourcing capability and store them in SourceComponents list */
+    /** Scans all Components to find those with Sourcing capability and store them in SourceComponents list */ // < CM: Do you really mean 'Sourcing' or 'Sink'?
     const CriterionType afterRegistrationCriterion = CriterionType("HasProvidingInterface", { "AfterRegistrationInterface" });
 
     // TODO redesign ComponentBase class to accept a single criterion instead of a criteria mapping.
     CriteriaType afterRegistrationCriteria;
     afterRegistrationCriteria.insert(afterRegistrationCriterion);
 
-    for (auto const & componentSelector : (this->m_ComponentSelectorContainer))
+    for (auto const & componentSelector : (this->m_ComponentSelectorContainer))  // < CM: parentheses around this->m_ComponentSelectorContainer are probably not needed.
     {
       ComponentBase::Pointer component = componentSelector.second->GetComponent();
       if (component->MeetsCriteria(afterRegistrationCriteria)) // TODO MeetsCriterion
@@ -264,7 +280,7 @@ namespace selx
       }
     }
 
-    return true;
+    return true; // < CM: Is it useful to always return true?
   }
 
   
@@ -272,9 +288,9 @@ namespace selx
   bool Overlord::RunRegistrations()
   {
 
-    for (auto const & runRegistrationComponent : *(this->m_RunRegistrationComponents)) // auto&& preferred?
+    for (auto const & runRegistrationComponent : *(this->m_RunRegistrationComponents)) // auto&& preferred?  < CM: (this->m_RunRegistrationComponents) -> this->m_RunRegistrationComponents
     {
-      RunRegistrationInterface* providingRunRegistrationInterface = dynamic_cast<RunRegistrationInterface*> (&(*runRegistrationComponent));
+      RunRegistrationInterface* providingRunRegistrationInterface = dynamic_cast<RunRegistrationInterface*> (&(*runRegistrationComponent));  // < CM: Does ITK not have a get() method for smart pointers?
       if (providingRunRegistrationInterface == nullptr) // is actually a double-check for sanity: based on criterion cast should be successful
       {
         itkExceptionMacro("dynamic_cast<RunRegistrationInterface*> fails, but based on component criterion it shouldn't")
@@ -282,7 +298,7 @@ namespace selx
       // For testing purposes, all Sources are connected to an ImageWriter
       providingRunRegistrationInterface->RunRegistration();
     }
-    return true;
+    return true;  // < CM: Is it useful to always return true?
   }
 
   bool Overlord::AfterRegistrations()
@@ -290,7 +306,7 @@ namespace selx
 
     for (auto const & afterRegistrationComponent : *(this->m_AfterRegistrationComponents)) // auto&& preferred?
     {
-      AfterRegistrationInterface* providingAfterRegistrationInterface = dynamic_cast<AfterRegistrationInterface*> (&(*afterRegistrationComponent));
+      AfterRegistrationInterface* providingAfterRegistrationInterface = dynamic_cast<AfterRegistrationInterface*> (&(*afterRegistrationComponent));  // < CM: Does ITK not have a get() method for smart pointers?
       if (providingAfterRegistrationInterface == nullptr) // is actually a double-check for sanity: based on criterion cast should be successful
       {
         itkExceptionMacro("dynamic_cast<AfterRegistrationInterface*> fails, but based on component criterion it shouldn't")
@@ -298,7 +314,7 @@ namespace selx
       // For testing purposes, all Sources are connected to an ImageWriter
       providingAfterRegistrationInterface->AfterRegistration();
     }
-    return true;
+    return true;  // < CM: Is it useful to always return true?
   }
   bool Overlord::Execute()
   {
@@ -317,7 +333,7 @@ namespace selx
     this->AfterRegistrations();
     //update all writers...
     
-    return true;
+    return true;  // < CM: Is it useful to always return true?
   }
 
   AnyFileReader::Pointer Overlord::GetInputFileReader(const Overlord::ComponentNameType& inputName)
@@ -329,7 +345,7 @@ namespace selx
     }
 
     //return sources[inputName]->GetInputFileReader();
-    return nullptr;
+    return nullptr;  // < CM: ??
   }
   
   AnyFileWriter::Pointer Overlord::GetOutputFileWriter(const Overlord::ComponentNameType& outputName)
