@@ -95,10 +95,7 @@ bool
 Blueprint
 ::AddComponent(ComponentNameType name)
 {
-  this->Modified();  // < CM: Nothing is modified yet. You should modify first and then notify.
-                     //       Also holds for other methods in this file.
-                     //       Do you really want to make this class observable anyway? What is the use of it?
-                     //       See also my comment about deriving from itk::DataObject in the header file.
+  this->Modified();
 
   // Returns true is addition was successful 
   return this->m_Graph.insert_vertex(name, { name, { {} } }).second;
