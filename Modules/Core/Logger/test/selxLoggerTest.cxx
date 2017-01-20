@@ -17,13 +17,38 @@
  *
  *=========================================================================*/
 
-#include "selxLogger.h"
-
 #include "gtest/gtest.h"
+#include "selxLogger.h"
 
 using namespace selx;
 
-TEST( LoggerTest, Initialization )
-{
-  Logger* logger = new Logger();
+Logger* logger = new Logger();
+
+TEST( LoggerTest, INFO )
+{ 
+  logger->Log( INFO, "Message at severity INFO" );
 }
+
+TEST( LoggerTest, WARNING )
+{
+  logger->Log( WARNING, "Message at severity WARNING " );
+}
+
+TEST( LoggerTest, ERROR )
+{
+  logger->Log( ERROR, "Message at severity ERROR" );
+}
+
+
+TEST( LoggerTest, Channel )
+{
+  logger->Log( INFO, "ITERATION", "Message to channel ITERATION at severity INFO" );
+}
+
+TEST( LoggerTest, FATAL )
+{
+  // This terminates the program
+  // logger->Log( FATAL, "Message at severity FATAL" );
+}
+
+

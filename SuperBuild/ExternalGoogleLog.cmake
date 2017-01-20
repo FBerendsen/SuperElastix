@@ -17,19 +17,27 @@
 #
 #=========================================================================
 
-set( ${MODULE}_INCLUDE_DIRS
-  ${${MODULE}_SOURCE_DIR}/include
+set( proj GoogleLog )
+
+set( GLOG_prefix ${CMAKE_CURRENT_BINARY_DIR}/${proj}-prefix )
+set( GLOG_binary_dir ${CMAKE_CURRENT_BINARY_DIR}/${proj}-build )
+set( GLOG_install_dir ${CMAKE_CURRENT_BINARY_DIR}/${proj} )
+
+ExternalProject_Add( ${proj}
+  PREFIX ${GLOG_prefix}
+  GIT_REPOSITORY "https://github.com/google/glog"
+  GIT_TAG b6a5e0524c28178985f0d228e9eaa43808dbec3c
+  BINARY_DIR ${GLOG_binary_dir}
+  INSTALL_DIR ${GLOG_install_dir}
+  CMAKE_ARGS
+    --no-warn-unused-cli
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+  INSTALL_COMMAND
+      "${CMAKE_COMMAND}"
+      --build .
+      --target install
 )
 
-# This module is header-only and does not contain any source files
-set( ${MODULE}_SOURCE_FILES
-)
+set( GLOG_ROOT ${GLOG_install_dir} )
+list( APPEND ELASTIX_DEPENDENCIES ${proj} )
 
-# This module is header-only and does not export any libraries
-set( ${MODULE}_LIBRARIES 
-)
-
-set( ${MODULE}_TEST_SOURCE_FILES
-  ${${MODULE}_SOURCE_DIR}/test/selxRegistrationItkv4Test.cxx
-  ${${MODULE}_SOURCE_DIR}/test/selxWBIR2016.cxx
-)

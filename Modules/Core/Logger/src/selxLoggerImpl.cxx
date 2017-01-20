@@ -17,15 +17,13 @@
  *
  *=========================================================================*/
 
-#ifndef Logger_cxx
-#define Logger_cxx
+#ifndef LoggerImpl_cxx
+#define LoggerImpl_cxx
+
+#define GLOG(severity, msg) LOG(severity) << msg; ;
 
 #include "selxLoggerImpl.h"
-
-#include "boost/log/sources/record_ostream.hpp"
-#include "boost/log/utility/setup/file.hpp"
-#include "boost/log/utility/setup/console.hpp"
-#include "boost/log/utility/setup/common_attributes.hpp"
+#include "glog/log_severity.h"
 
 namespace selx
 {
@@ -33,10 +31,7 @@ namespace selx
 Logger::LoggerImpl
 ::LoggerImpl()
 {
-  this->m_Logger = boost::log::sources::severity_channel_logger< SeverityType, ChannelType >();
-
-  // Add LineID, TimeStamp, ProcessID and ThreadID
-  boost::log::add_common_attributes();
+  google::InitGoogleLogging( "SuperElastix" );
 }
 
 Logger::LoggerImpl
@@ -46,65 +41,42 @@ Logger::LoggerImpl
 
 void
 Logger::LoggerImpl
-::AddConsole( FormatType format )
+::Log( SeverityType const severity, MessageType const message )
 {
-  boost::log::add_console_log(
-    std::cout, 
-    boost::log::keywords::format = format
-  ); 
-} 
-
-void
-Logger::LoggerImpl
-::AddFile( FileNameType fileName, RotationSizeType rotationSize, FormatType format )
-{
-  boost::log::add_file_log(
-    boost::log::keywords::file_name = fileName,
-    boost::log::keywords::rotation_size = rotationSize, // 1GB
-    boost::log::keywords::format = format
-  );
-}
-
-void
-Logger::LoggerImpl
-::AddFile( FileNameType fileName, ChannelType channel, RotationSizeType rotationSize, FormatType format )
-{
-  boost::log::add_file_log(
-    boost::log::keywords::file_name = fileName,
-    //boost::log::keywords::filter = channel_filter == channel,
-    boost::log::keywords::rotation_size = rotationSize, // 1GB
-    boost::log::keywords::format = format
-  );
-}
-
-void
-Logger::LoggerImpl
-::Log( SeverityType severity, MessageType message )
-{
-  boost::log::record record = this->m_Logger.open_record( boost::log::keywords::severity = severity );
-  if( record )
-  {
-    boost::log::record_ostream strm( record );
-    strm << message;
-    strm.flush();
-    this->m_Logger.push_record( boost::move( record ) );
+  FLAGS_logtostderr = 1;
+  switch( severity ) {
+    case INFO:
+      GLOG( INFO, message );
+      google::FlushLogFiles(INFO);
+      break;
+    case WARNING:
+      GLOG( WARNING, message );
+      google::FlushLogFiles(WARNING);
+      break;
+    case ERROR:
+      GLOG( ERROR, message);
+      google::FlushLogFiles(ERROR);
+      break;
+    case FATAL:
+      GLOG( FATAL, message );
+      break;
+    default:
+      GLOG( INFO, message ) ;
+      google::FlushLogFiles(WARNING);
+      break;
   }
+
+
 }
 
 void
 Logger::LoggerImpl
-::Log( Logger::ChannelType channel, SeverityType severity, const std::string message )
+::Log( SeverityType const severity, Logger::ChannelType const channel, MessageType const message )
 {
-  boost::log::record record = this->m_Logger.open_record( ( boost::log::keywords::channel = channel, boost::log::keywords::severity = severity ) );
-  if( record )
-  {
-    boost::log::record_ostream strm( record );
-    strm << message;
-    strm.flush();
-    this->m_Logger.push_record( boost::move( record ) );
-  }
+  std::string const channelMessage = "<" + channel + "> " + message;
+  this->Log( severity, channelMessage );
 }
 
 }
 
-#endif // Logger_cxx
+#endif // LoggerImpl_cxx

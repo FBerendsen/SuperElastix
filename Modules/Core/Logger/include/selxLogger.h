@@ -27,8 +27,6 @@ namespace selx {
 
 enum SeverityType
 {
-  TRACE,
-  DEBUG,
   INFO,
   WARNING,
   ERROR,
@@ -42,20 +40,11 @@ public:
   typedef const std::string ChannelType;
   typedef const std::string MessageType;
 
-  typedef const std::string FormatType;
-  typedef const std::string FileNameType;
-  typedef const int         RotationSizeType;
-
   Logger();
   ~Logger();
 
-  void AddConsole( FormatType format = "[%TimeStamp% %ComponentName% %Channel% %SeverityLevel%]: %Message%" );
-  void AddFile( FileNameType fileName = "SuperElastix_%Y-%m-%d_%H-%M-%S.%N.log", 
-                RotationSizeType rotationSize = 1024 * 1024 * 1024,
-                FormatType format = "[%LineID% %TimeStamp% %ComponentName% %Channel% %SeverityLevel%]: %Message%" );
-
   void Log( SeverityType severity, MessageType message );
-  void Log( ChannelType channel, SeverityType severity, MessageType message );
+  void Log( SeverityType severity, ChannelType channel, MessageType message );
 
 private:
 

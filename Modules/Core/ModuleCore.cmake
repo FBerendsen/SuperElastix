@@ -60,8 +60,9 @@ set( ${MODULE}_TEST_SOURCE_FILES
 )
 
 set( ${MODULE}_LIBRARIES 
-  ${Boost_LIBRARIES} # log filesystem system time_date thread
+  ${Boost_LIBRARIES} # filesystem system time_date thread
   ${MODULE}
+  glog
 )
 
 set( ${MODULE}_MODULE_DEPENDENCIES 

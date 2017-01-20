@@ -21,8 +21,9 @@
 # Private macros
 
 macro( _selxapplication_check_name APPLICATION )
-  # "No funny stuff" - Karl Hungus
+  # "This is not 'nam, there are rules!" - Walter Sobchak
   if( NOT "${_name}" MATCHES "^[a-zA-Z_]*$" )
+    # "OVER THE LINE!"
     message( FATAL_ERROR "Invalid application name: ${APPLICATION}" )
   endif()
 

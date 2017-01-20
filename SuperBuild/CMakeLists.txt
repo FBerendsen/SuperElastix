@@ -115,6 +115,18 @@ else()
 endif()
 
 # ---------------------------------------------------------------------
+# Build GoogleLog
+
+mark_as_advanced( USE_SYSTEM_GOOGLELOG )
+option( USE_SYSTEM_GOOGLELOG "Use a pre-compiled version of GoogleLog. " OFF ) 
+
+if ( USE_SYSTEM_GOOGLELOG ) 
+  find_package( glog REQUIRED ) 
+else() 
+  include( ExternalGoogleLog ) 
+endif() 
+
+# ---------------------------------------------------------------------
 # Build GoogleTest
 
 mark_as_advanced( USE_SYSTEM_GOOGLETEST )

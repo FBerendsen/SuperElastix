@@ -113,8 +113,13 @@ set(BOOST_INCLUDEDIR "${BOOST_ROOT}/BOOST-prefix/src/Boost/boost/" )
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/BOOST-prefix/src/Boost/stage/lib/" )
 set(BOOST_ROOT "${BOOST_ROOT}/BOOST-prefix/src/Boost/" )
 
-find_package( Boost COMPONENTS filesystem system log date_time thread regex REQUIRED QUIET ) # graph ?
+find_package( Boost COMPONENTS filesystem system date_time thread regex REQUIRED QUIET )
 include_directories( ${Boost_INCLUDE_DIRS} )
+
+# ---------------------------------------------------------------------
+# GoogleLog Library
+
+find_package( glog REQUIRED )
 
 # ---------------------------------------------------------------------
 # SuperElastix configuration 

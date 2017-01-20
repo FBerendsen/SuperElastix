@@ -17,6 +17,9 @@
  *
  *=========================================================================*/
 
+#ifndef Logger_cxx
+#define Logger_cxx
+
 #include "selxLogger.h"
 #include "selxLoggerImpl.h"
 
@@ -27,20 +30,6 @@ Logger
 
 Logger
 ::~Logger( void ) = default;
-
-void
-Logger
-::AddConsole( FormatType format )
-{
-  this->m_Pimple->AddConsole( format );
-}
-
-void
-Logger
-:: AddFile( FileNameType fileName, RotationSizeType rotationSize, FormatType format )
-{
-  this->m_Pimple->AddFile( fileName, rotationSize, format );
-}
                
 void
 Logger
@@ -51,9 +40,11 @@ Logger
 
 void
 Logger
-::Log( ChannelType channel, SeverityType severity, MessageType message )
+::Log( SeverityType severity, ChannelType channel, MessageType message )
 {
-  this->m_Pimple->Log( channel, severity, message );
+  this->m_Pimple->Log( severity, channel, message );
 }
 
-}
+} // namespace selx
+
+#endif // Logger.cxx
